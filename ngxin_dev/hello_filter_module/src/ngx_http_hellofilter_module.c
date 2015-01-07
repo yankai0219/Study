@@ -53,7 +53,8 @@ static ngx_int_t ngx_http_hello_body_filter(ngx_http_request_t *r, ngx_chain_t *
     ngx_log_error(NGX_LOG_DEBUG, r->connection->log, 0, "begin into ngx_http_hello_body_filter");
     ngx_chain_t *cl;
     ngx_chain_t *tmpcl = NULL;
-    int chain_contains_last_buffer = 0;
+    ngx_int_t chain_contains_last_buffer = 0;
+    ngx_int_t rc;
     if (in == NULL || r->header_only)
     {
         ngx_log_error(NGX_LOG_DEBUG, r->connection->log, 0, "ngx_chain_t in is null");
@@ -82,37 +83,38 @@ static ngx_int_t ngx_http_hello_body_filter(ngx_http_request_t *r, ngx_chain_t *
         return ngx_http_hello_next_body_filter(r, in);
     }
 
+
+    if (in) {
+        rc = ngx_http_hello_next_body_filter(r, in);
+        if (rc == NGX_ERROR || rc > NGX_OK) {
+            ngx_log_error(NGX_LOG_DEBUG, r->connection->log, 0, "body sends failed");
+            return rc;
+        }
+        ngx_log_error(NGX_LOG_DEBUG, r->connection->log, 0, "body sends succeed");
+    }
+
     ngx_buf_t *b;
     b = ngx_calloc_buf(r->pool);
     if (b == NULL) {
         return NGX_ERROR;
     }
-
-
-    ngx_log_error(NGX_LOG_DEBUG, r->connection->log, 0, "body_filter-->3");
     b->pos = (u_char *)"<!-- Served by Nginx ---";
     b->last = b->pos + sizeof("<!-- Served by Nginx ---") - 1;
+    b->last_buf = 1;
+    b->last_in_chain = 1;
+
     ngx_chain_t *added_link;
     added_link = ngx_palloc(r->pool, sizeof(ngx_chain_t));
     added_link->buf = b;
     added_link->next = NULL;
 
     ngx_log_error(NGX_LOG_DEBUG, r->connection->log, 0, "body_filter-->4");
-    if (cl == NULL) {
-        ngx_log_error(NGX_LOG_DEBUG, r->connection->log, 0, "cl is null");
-    }
-    cl->next = added_link;
-    ngx_log_error(NGX_LOG_DEBUG, r->connection->log, 0, "body_filter-->5");
-    cl->buf->last_buf = 0;
-    cl->buf->last_in_chain = 0;
-    added_link->buf->last_buf = 1;
-    added_link->buf->last_in_chain = 1;
-    ngx_log_error(NGX_LOG_DEBUG, r->connection->log, 0, "body_filter-->6");
 
-
-    for (cl = in; cl; cl = cl->next) {
-        ngx_log_error(NGX_LOG_DEBUG, r->connection->log, 0, "last_buf:%d, last_in_chain:%d, buf content:%s", 
-                cl->buf->last_buf, cl->buf->last_in_chain, cl->buf->pos);
+    rc = ngx_http_hello_next_body_filter(r, added_link);
+    if (rc == NGX_ERROR || rc > NGX_OK) {
+        ngx_log_error(NGX_LOG_DEBUG, r->connection->log, 0, "body sends failed");
+        return rc;
     }
-    return ngx_http_hello_next_body_filter(r, in);
+    ngx_log_error(NGX_LOG_DEBUG, r->connection->log, 0, "body sends succeed");
+    return rc;
 }
