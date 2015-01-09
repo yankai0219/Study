@@ -72,9 +72,11 @@ static ngx_int_t ngx_http_hello_body_filter(ngx_http_request_t *r, ngx_chain_t *
     if (b == NULL) {
         return NGX_ERROR;
     }
-    b->pos = (u_char *)"keything---->net";
-    b->last = b->pos + sizeof("keything---->net") - 1;
+    ngx_str_t str = ngx_string("keything---->net");
+    b->pos = str.data;
+    b->last = b->pos + str.len;
     b->last_buf = 1;
+    b->memory = 1;
     b->last_in_chain = 1;
 
     ngx_chain_t *added_link;
