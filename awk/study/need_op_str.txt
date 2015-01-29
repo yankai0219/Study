@@ -1,0 +1,4 @@
+ERROR20121211 11:35:00[AppWorker] __LSE vec_txt_size:185 vec_pic_size:5 
+ERROR20121211 11:35:00[AppWorker] __LSE vec_txt_size:8 vec_pic_size:1
+ERROR20121211 11:35:00[AppWorker] __LSE vec_txt_size:46 vec_pic_size:20 
+ERROR20121211 11:35:00[AppWorker] __LSE vec_txt_size:0 vec_pic_size:0

@@ -1,0 +1,7 @@
+本目录学习来自： http://coolshell.cn/articles/9070.html
+学习资料:
+ http://www.gnu.org/software/gawk/manual/gawk.html
+内建变量，参看：http://www.gnu.org/software/gawk/manual/gawk.html#Built_002din-Variables
+流控方面，参看：http://www.gnu.org/software/gawk/manual/gawk.html#Statements
+内建函数，参看：http://www.gnu.org/software/gawk/manual/gawk.html#Built_002din
+正则表达式，参看：http://www.gnu.org/software/gawk/manual/gawk.html#Regexp
